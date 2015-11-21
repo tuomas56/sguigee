@@ -3,7 +3,14 @@ from functools import partial, wraps
 from contextlib import contextmanager
 import tkinter.messagebox as tkm
 
+def wrapmethod(name):
+	def _method(self, *args, **kwargs):
+		return getattr(self.get(), name)(*args, **kwargs)
+	return _method
+
 class _tkwrapper:
+	config = wrapmethod('config')
+
 	def __init__(self, **kwargs):
 		self._can_pack = True
 		self.nargs = {}
@@ -46,6 +53,14 @@ class Button(_tkwrapper):
 
 class Canvas(_tkwrapper):
 	_class = tk.Canvas
+	create_arc = wrapmethod('create_arc')
+	create_bitmap = wrapmethod('create_bitmap')
+	create_image = wrapmethod('create_image')
+	create_line = wrapmethod('create_line')
+	create_oval = wrapmethod('create_oval')
+	create_polygon = wrapmethod('create_polygon')
+	create_rectangle = wrapmethod('create_rectangle')
+	create_text = wrapmethod('create_text')
 
 class Entry(_tkwrapper):
 	_class = tk.Entry
@@ -149,6 +164,10 @@ def button(func=None, *, expand=True, fill="x", side='left', use_monospace_font=
 			return x
 		return _button
 
+def canvas(*, expand=True, fill="both", side="left", **kwargs):
+	c = Canvas(pack_expand=expand, pack_fill=fill, pack_side=side, **kwargs)
+	root << c
+	return c
 		
 
 def label(text='', *, expand=True, fill="x", side='left', **kwargs):
@@ -173,4 +192,6 @@ def show_message(*message, sep=' ', type='info', title=None):
 	elif type == 'error':
 		tkm.showerror(title=title, message=message)
 
-__all__ = [frame, Button, Canvas, Entry, Label, Menu, Frame, Tk, row, button, window, label, textbox, show_message]
+__all__ = ['frame', 'Button', 'Canvas', 'Entry', 'Label', 'Menu', 'Frame',
+		   'Tk', 'row', 'button', 'window', 'label', 'textbox',
+	       'show_message', 'canvas']
