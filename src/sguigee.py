@@ -62,6 +62,9 @@ class Canvas(_tkwrapper):
 	create_rectangle = wrapmethod('create_rectangle')
 	create_text = wrapmethod('create_text')
 
+	def clear(self):
+		self.get().delete("all")
+
 class Entry(_tkwrapper):
 	_class = tk.Entry
 

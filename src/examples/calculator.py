@@ -1,4 +1,4 @@
-from gui import window, row, button, textbox
+from sguigee import window, row, button, textbox
 import operator as op
 
 def make_button(text):
