@@ -44,9 +44,11 @@ This is used *within* the ```window``` context manager:
 
 ####Labels
 
-Within a row, you can place labels. They are created like this:
+Within a row, you can place labels. They are created like this: 
 
-```label(text)```
+```python
+label(text)
+```
 
 Sguigee uses the pack geometry manager in TKInter, you can control which options are passed to ```pack``` by passing them to the widget constructor (or a function like ```label```) and prefixing them with ```pack_```, e.g) pack_fill, pack_expand, etc.
 
