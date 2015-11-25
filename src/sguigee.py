@@ -2,6 +2,9 @@ import tkinter as tk
 from functools import partial, wraps
 from contextlib import contextmanager
 import tkinter.messagebox as tkm
+import tkinter.simpledialog as tks
+from threading import Thread
+import time
 
 def wrapmethod(name):
 	def _method(self, *args, **kwargs):
@@ -10,6 +13,8 @@ def wrapmethod(name):
 
 class _tkwrapper:
 	config = wrapmethod('config')
+	destroy = wrapmethod('destroy')
+	hide = wrapmethod('pack_forget')
 
 	def __init__(self, **kwargs):
 		self._can_pack = True
@@ -27,6 +32,7 @@ class _tkwrapper:
 
 	def set_parent(self, parent):
 		self._value = self._class(parent, **self.nargs)
+		self._parent = parent
 
 	def append(self, element):
 		element.set_parent(self.get())
@@ -43,7 +49,10 @@ class _tkwrapper:
 		if self._can_pack:
 			kwargs.update(self.pargs)
 			self.get().pack(**kwargs)
-			self._can_pac = False
+			self._can_pack = False
+
+	def show(self, **kwargs):
+		return self.pack(**kwargs)
 
 	def get(self):
 		return self._value
@@ -195,6 +204,21 @@ def show_message(*message, sep=' ', type='info', title=None):
 	elif type == 'error':
 		tkm.showerror(title=title, message=message)
 
+def ask_message(*message, sep=' ', title=None, **kwargs):
+	message = sep.join(map(lambda x: x.get() if isinstance(x, tk.StringVar) else str(x), message))
+	if title is None:
+		global root
+		title = root.get().title()
+	return tks.askstring(title, message, **kwargs)
+
+def after(secs):
+	def _after(func):
+		global root
+		root.get().after(secs * 1000, func)
+	return _after
+
+	
+
 __all__ = ['frame', 'Button', 'Canvas', 'Entry', 'Label', 'Menu', 'Frame',
 		   'Tk', 'row', 'button', 'window', 'label', 'textbox',
-	       'show_message', 'canvas']
+	       'show_message', 'canvas', 'after', 'ask_message']
