@@ -126,6 +126,13 @@ class Tk:
 			self.tk.minsize(self.tk.winfo_width(), self.tk.winfo_height())
 		self.tk.mainloop()
 
+class StringVar(_tkwrapper, tk.StringVar):
+	def __init__(self, *args, **kwargs):
+		tk.StringVar.__init__(self, *args, **kwargs)
+	
+	def set_element(self, parent):
+		self._value = parent
+
 @contextmanager
 def frame(parent, **kwargs):
 	f = Frame(**kwargs)
@@ -188,8 +195,10 @@ def label(text='', *, expand=True, fill="x", side='left', **kwargs):
 	return x
 
 def textbox(*, expand=True, fill="x", side='left', **kwargs):
-	s = tk.StringVar()
-	root << Entry(textvariable=s, pack_fill=fill, pack_expand=expand, pack_side=side, **kwargs)
+	s = StringVar()
+	x = Entry(textvariable=s, pack_fill=fill, pack_expand=expand, pack_side=side, **kwargs)
+	root << x
+	s.set_element(x)
 	return s
 
 def show_message(*message, sep=' ', type='info', title=None):
